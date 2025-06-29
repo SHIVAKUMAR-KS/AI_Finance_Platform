@@ -34,6 +34,13 @@ const Header = async () => {
             >
               Testimonials
             </a>
+            <a 
+              href="#contact"
+              className="text-gray-600 hover:text-blue-600"
+              >
+              Contact
+
+            </a>
           </SignedOut>
         </div>
 
