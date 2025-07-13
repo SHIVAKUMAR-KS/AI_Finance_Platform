@@ -34,24 +34,7 @@ const Header = async () => {
             >
               Testimonials
             </a>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600">
-              Contact Us
-            </Link>
           </SignedOut>
-          <SignedIn>
-            <a href="#features" className="text-gray-600 hover:text-blue-600">
-              Features
-            </a>
-            <a
-              href="#testimonials"
-              className="text-gray-600 hover:text-blue-600"
-            >
-              Testimonials
-            </a>
-            <Link href="/contact" className="text-gray-600 hover:text-blue-600">
-              Contact Us
-            </Link>
-          </SignedIn>
         </div>
 
         {/* Action Buttons */}

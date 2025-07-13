@@ -6,9 +6,6 @@ import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
-import { sendEmail } from "@/actions/send-email";
-import { getCurrentBudget } from "@/actions/budget";
-import EmailTemplate from "../emails/template.jsx";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -89,83 +86,6 @@ export async function createTransaction(data) {
         where: { id: data.accountId },
         data: { balance: newBalance },
       });
-
-      // --- Budget Alert Logic ---
-      if (data.type === "EXPENSE") {
-        // Get the user's budget and current expenses
-        const budget = await db.budget.findFirst({ where: { userId: user.id } });
-        if (budget) {
-          // Get current month's expenses for this account
-          const currentDate = new Date();
-          const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-          const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-          const expenses = await tx.transaction.aggregate({
-            where: {
-              userId: user.id,
-              type: "EXPENSE",
-              date: { gte: startOfMonth, lte: endOfMonth },
-              accountId: data.accountId,
-            },
-            _sum: { amount: true },
-          });
-          const spent = expenses._sum.amount ? expenses._sum.amount.toNumber() : 0;
-          const percent = budget.amount.gt(0) ? (spent / budget.amount.toNumber()) * 100 : 0;
-          console.log("[BudgetAlert] Logic entered. spent:", spent, "budget:", budget.amount.toNumber(), "percent:", percent, "alert90Sent:", budget.alert90Sent, "alert100Sent:", budget.alert100Sent);
-          let shouldUpdate = false;
-          // 90% alert
-          if (percent >= 90 && !budget.alert90Sent) {
-            console.log("[BudgetAlert] 90% threshold met. Sending email...");
-            await sendEmail({
-              to: user.email,
-              subject: "Budget Alert: 90% Used!",
-              react: (
-                <EmailTemplate
-                  userName={user.name || user.email}
-                  type="budget-alert"
-                  data={{
-                    percentageUsed: percent,
-                    budgetAmount: budget.amount.toNumber(),
-                    totalExpenses: spent,
-                  }}
-                />
-              ),
-            });
-            shouldUpdate = true;
-            budget.alert90Sent = true;
-          }
-          // 100% alert
-          if (percent >= 100 && !budget.alert100Sent) {
-            console.log("[BudgetAlert] 100% threshold met. Sending email...");
-            await sendEmail({
-              to: user.email,
-              subject: "Budget Alert: 100% Used!",
-              react: (
-                <EmailTemplate
-                  userName={user.name || user.email}
-                  type="budget-alert"
-                  data={{
-                    percentageUsed: percent,
-                    budgetAmount: budget.amount.toNumber(),
-                    totalExpenses: spent,
-                  }}
-                />
-              ),
-            });
-            shouldUpdate = true;
-            budget.alert100Sent = true;
-          }
-          if (shouldUpdate) {
-            await tx.budget.update({
-              where: { id: budget.id },
-              data: {
-                alert90Sent: budget.alert90Sent,
-                alert100Sent: budget.alert100Sent,
-              },
-            });
-          }
-        }
-      }
-      // --- End Budget Alert Logic ---
 
       return newTransaction;
     });

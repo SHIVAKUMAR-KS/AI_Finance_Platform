@@ -50,10 +50,10 @@ export function AccountCard({ account }) {
   }, [error]);
 
   return (
-    <Card className="hover:shadow-md transition-shadow group relative bg-[#1B0036] text-brand-body border-none">
+    <Card className="hover:shadow-md transition-shadow group relative">
       <Link href={`/account/${id}`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium capitalize text-brand-accent">
+          <CardTitle className="text-sm font-medium capitalize">
             {name}
           </CardTitle>
           <Switch

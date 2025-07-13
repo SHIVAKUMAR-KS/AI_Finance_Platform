@@ -48,24 +48,13 @@ module.exports = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			},
-        brand: {
-          gradientFrom: '#140C36', // Deep Purple
-          gradientTo: '#1B0036',   // Deep Blue
-          cta: '#B232F5',          // Vibrant Purple
-          accent: '#FFFFFF',       // Bright White
-          glow: '#E440F5',         // Neon Purple/Pink Glow
-          body: '#BFBFBF',         // Soft Grayish White
-          buttonText: '#FFFFFF',   // Button Text
-          secondaryBtn: '#A24AE0', // Secondary Button
-          overlay: '#66F9FF',      // Electric Blue
-        },
+  			}
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
   		}
-  	},
-  	borderRadius: {
-  		lg: 'var(--radius)',
-  		md: 'calc(var(--radius) - 2px)',
-  		sm: 'calc(var(--radius) - 4px)'
   	}
   },
   plugins: [require("tailwindcss-animate")],
